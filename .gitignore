@@ -1,0 +1,29 @@
+# Python virtual environment
+venv/
+.env
+
+# Python cache / compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Logs and output
+*.log
+output/
+*.txt
+
+# IDE / editor configs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# MacOS system files
+.DS_Store
+
+# Jupyter notebooks checkpoints (if any)
+.ipynb_checkpoints/
+
+# Optional: AI API key or secrets
+*.key
