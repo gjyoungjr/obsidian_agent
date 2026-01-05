@@ -432,76 +432,91 @@ def parse_weekly_notes_combined(vault_path, days_back=7):
     return weekly_stats, daily_data
 
 
-def format_weekly_daily_with_reflections(daily_data, weekly_stats):
+def format_weekly_daily_with_reflections(daily_data=None, weekly_stats=None,
+                                         include_weekly_reflections=True):
     """
     Formats weekly aggregates + weekly reflections + daily breakdown for AI input.
     Reflections in weekly summary are grouped by day, date appears once per day.
+
+    Args:
+        daily_data: Optional list of daily data dicts. If provided, includes 
+                    daily breakdown section.
+        weekly_stats: Optional dict with weekly aggregates. If provided, includes
+                      weekly summary section.
+        include_weekly_reflections: If True and daily_data is provided, includes
+                                    the weekly reflections section. Defaults to True.
     """
     lines = []
 
     # --- Weekly Summary Header ---
-    lines.append("WEEKLY SUMMARY\n")
+    if weekly_stats:
+        lines.append("WEEKLY SUMMARY\n")
 
-    # Habits
-    lines.append("HABITS:")
-    for h, val in weekly_stats["habits"].items():
-        lines.append(f"- {h}: {val['done']} / {val['total']}")
-
-    # Priorities
-    lines.append("\nPRIORITIES:")
-    for p, val in weekly_stats["priorities"].items():
-        rate = (val["done"] / val["total"] * 100) if val["total"] else 0
-        lines.append(f"- {p}: {val['done']} / {val['total']} ({rate:.0f}%)")
-
-    # Admin
-    a = weekly_stats["admin"]
-    rate = (a["done"] / a["total"] * 100) if a["total"] else 0
-    lines.append(f"\nADMIN: {a['done']} / {a['total']} ({rate:.0f}%)")
-
-    # Energy / Mood
-    if weekly_stats["energy"]:
-        avg_energy = sum(weekly_stats["energy"]) / len(weekly_stats["energy"])
-        lines.append(f"\nAVERAGE ENERGY: {avg_energy:.1f}")
-    if weekly_stats["mood"]:
-        avg_mood = sum(weekly_stats["mood"]) / len(weekly_stats["mood"])
-        lines.append(f"AVERAGE MOOD: {avg_mood:.1f}")
-
-    # Weekly Reflections (grouped by day)
-    lines.append("\nWEEKLY REFLECTIONS:")
-    for day_data in daily_data:
-        if not day_data["reflections"]:
-            continue
-        lines.append(f"{day_data['date']}:")
-        for r in day_data["reflections"]:
-            clean_r = r.replace("###", "").strip()
-            lines.append(f"- {clean_r}")
-        lines.append("")  # blank line between days
-
-    lines.append("\n--- DAILY BREAKDOWN ---\n")
-
-    # Daily breakdown
-    for day_data in daily_data:
-        lines.append(day_data["date"])
+        # Habits
         lines.append("HABITS:")
-        for habit, val in day_data["habits"].items():
-            lines.append(f"- {habit}: {val['done']} / {val['total']}")
-        lines.append("PRIORITIES:")
-        for p, val in day_data["priorities"].items():
+        for h, val in weekly_stats["habits"].items():
+            lines.append(f"- {h}: {val['done']} / {val['total']}")
+
+        # Priorities
+        lines.append("\nPRIORITIES:")
+        for p, val in weekly_stats["priorities"].items():
             rate = (val["done"] / val["total"] * 100) if val["total"] else 0
             lines.append(
                 f"- {p}: {val['done']} / {val['total']} ({rate:.0f}%)")
-        a = day_data["admin"]
+
+        # Admin
+        a = weekly_stats["admin"]
         rate = (a["done"] / a["total"] * 100) if a["total"] else 0
-        lines.append(f"ADMIN: {a['done']} / {a['total']} ({rate:.0f}%)")
-        if day_data["energy"] is not None:
-            lines.append(f"ENERGY: {day_data['energy']}")
-        if day_data["mood"] is not None:
-            lines.append(f"MOOD: {day_data['mood']}")
-        lines.append("REFLECTIONS:")
-        for r in day_data["reflections"]:
-            clean_r = r.replace("###", "").strip()
-            lines.append(f"- {clean_r}")
-        lines.append("\n")  # newline between days
+        lines.append(f"\nADMIN: {a['done']} / {a['total']} ({rate:.0f}%)")
+
+        # Energy / Mood
+        if weekly_stats["energy"]:
+            avg_energy = sum(weekly_stats["energy"]) / \
+                len(weekly_stats["energy"])
+            lines.append(f"\nAVERAGE ENERGY: {avg_energy:.1f}")
+        if weekly_stats["mood"]:
+            avg_mood = sum(weekly_stats["mood"]) / len(weekly_stats["mood"])
+            lines.append(f"AVERAGE MOOD: {avg_mood:.1f}")
+
+    # Weekly Reflections (grouped by day)
+    if daily_data and include_weekly_reflections:
+        lines.append("\nWEEKLY REFLECTIONS:")
+        for day_data in daily_data:
+            if not day_data["reflections"]:
+                continue
+            lines.append(f"{day_data['date']}:")
+            for r in day_data["reflections"]:
+                clean_r = r.replace("###", "").strip()
+                lines.append(f"- {clean_r}")
+            lines.append("")  # blank line between days
+
+    if daily_data:
+        lines.append("\n--- DAILY BREAKDOWN ---\n")
+
+        # Daily breakdown
+        for day_data in daily_data:
+            lines.append(day_data["date"])
+            lines.append("HABITS:")
+            for habit, val in day_data["habits"].items():
+                lines.append(f"- {habit}: {val['done']} / {val['total']}")
+            lines.append("PRIORITIES:")
+            for p, val in day_data["priorities"].items():
+                rate = (val["done"] / val["total"]
+                        * 100) if val["total"] else 0
+                lines.append(
+                    f"- {p}: {val['done']} / {val['total']} ({rate:.0f}%)")
+            a = day_data["admin"]
+            rate = (a["done"] / a["total"] * 100) if a["total"] else 0
+            lines.append(f"ADMIN: {a['done']} / {a['total']} ({rate:.0f}%)")
+            if day_data["energy"] is not None:
+                lines.append(f"ENERGY: {day_data['energy']}")
+            if day_data["mood"] is not None:
+                lines.append(f"MOOD: {day_data['mood']}")
+            lines.append("REFLECTIONS:")
+            for r in day_data["reflections"]:
+                clean_r = r.replace("###", "").strip()
+                lines.append(f"- {clean_r}")
+            lines.append("\n")  # newline between days
 
     return "\n".join(lines)
 
@@ -509,6 +524,7 @@ def format_weekly_daily_with_reflections(daily_data, weekly_stats):
 if __name__ == "__main__":
     VAULT = "/Users/gilbertyoung/documents/notes/Daily Actions"
     weekly_stats, daily_data = parse_weekly_notes_combined(VAULT)
-    ai_input = format_weekly_daily_with_reflections(daily_data, weekly_stats)
+    ai_input = format_weekly_daily_with_reflections(
+        daily_data=daily_data, include_weekly_reflections=False)
 
     print(ai_input)
