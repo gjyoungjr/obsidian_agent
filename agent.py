@@ -8,8 +8,8 @@ from langchain_groq import ChatGroq
 load_dotenv()
 
 model = init_chat_model(
-    model="claude-sonnet-4-5-20250929",
-    api_key=os.getenv("CLAUDE_API_KEY"),
+    model="openai:gpt-4o",
+    api_key=os.getenv("OPENAI_API_KEY"),
 )
 
 agent = create_deep_agent(
