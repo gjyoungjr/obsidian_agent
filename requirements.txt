@@ -1,0 +1,5 @@
+python-dotenv==1.2.1
+deepagents
+langchain
+langchain-groq
+langchain-openai
