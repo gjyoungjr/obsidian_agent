@@ -3,3 +3,4 @@ deepagents
 langchain
 langchain-groq
 langchain-openai
+rich>=13.0.0
