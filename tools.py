@@ -11,6 +11,16 @@ VAULT_PATH = os.getenv("OBSIDIAN_VAULT_PATH",
 REVIEW_FOLDER = "Weekly Reviews"
 
 
+def get_raw_weekly_data(days_back: int = 7) -> tuple:
+    """
+    Get raw weekly data for stats preview (not an agent tool).
+
+    Returns:
+        Tuple of (weekly_stats, daily_data)
+    """
+    return parse_weekly_notes_combined(VAULT_PATH, days_back)
+
+
 @tool
 def get_weekly_review(days_back: int = 7) -> str:
     """

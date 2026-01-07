@@ -29,14 +29,20 @@ OBSIDIAN_VAULT_PATH=/path/to/your/vault/Daily Actions
 ## Usage
 
 ```bash
-# Generate a 7-day review
+# Full weekly review (default)
 python agent.py
 
-# Custom number of days
+# Review past 2 weeks
 python agent.py --days 14
 
-# Enable interactive chat after review
+# Review + interactive chat after
 python agent.py --chat
+
+# Quick 2-sentence vibe check (no save)
+python agent.py --quick
+
+# Combine flags
+python agent.py --days 14 --chat
 ```
 
 ## Expected Daily Note Format
