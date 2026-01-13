@@ -57,7 +57,7 @@ def send_email(
     return resend.Emails.send(params)
 
 
-def send_weekly_review_email(
+def send_weekly_email(
     to: str,
     review_content: str,
     week_label: str = "This Week",
