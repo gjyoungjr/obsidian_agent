@@ -128,7 +128,7 @@ def send_weekly_email(
 if __name__ == "__main__":
     # Test sending an email
     result = send_email(
-        to="test@example.com",
+        to="delivered@resend.dev",
         subject="Test Email from Obsidian Agent",
         html="<h1>Hello!</h1><p>This is a test email.</p>",
         text="Hello! This is a test email.",
