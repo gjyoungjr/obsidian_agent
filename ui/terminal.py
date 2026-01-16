@@ -262,3 +262,4 @@ class SimpleStreamPrinter:
         console.print()  # Final newline
         return self.buffer
 
+

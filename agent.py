@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 
 from prompt import OPTIMIZED_SYSTEM_PROMPT
-from tools import get_raw_weekly_data, get_weekly_review, save_to_obsidian
+from tools import (email_weekly_review, get_raw_weekly_data, get_weekly_review,
+                   save_to_obsidian)
 from ui import (console, print_agent_response, print_chat_header, print_error,
                 print_header, print_stats_preview, print_success,
                 print_suggestions, print_user_prompt)
@@ -23,7 +24,7 @@ def create_agent():
     return create_deep_agent(
         model=model,
         system_prompt=OPTIMIZED_SYSTEM_PROMPT,
-        tools=[get_weekly_review, save_to_obsidian],
+        tools=[get_weekly_review, save_to_obsidian, email_weekly_review],
     )
 
 

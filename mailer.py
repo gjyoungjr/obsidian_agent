@@ -39,7 +39,7 @@ def send_email(
         raise ValueError("Either 'html' or 'text' content must be provided")
 
     sender = from_email or os.getenv(
-        "RESEND_FROM_EMAIL", "onboarding@resend.dev")
+        "RESEND_SOURCE_EMAIL", "onboarding@resend.dev")
 
     params: resend.Emails.SendParams = {
         "from": sender,
@@ -128,7 +128,7 @@ def send_weekly_email(
 if __name__ == "__main__":
     # Test sending an email
     result = send_email(
-        to="delivered@resend.dev",
+        to="gilbertjyoungjr@gmail.com",
         subject="Test Email from Obsidian Agent",
         html="<h1>Hello!</h1><p>This is a test email.</p>",
         text="Hello! This is a test email.",
