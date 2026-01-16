@@ -5,6 +5,7 @@ from parser.weekly_parser import (format_weekly_daily_with_reflections,
 from pathlib import Path
 
 from langchain_core.tools import tool
+from mailer import send_weekly_email
 
 VAULT_PATH = os.getenv("OBSIDIAN_VAULT_PATH",
                        "/Users/gilbertyoung/documents/notes/Daily Actions")
@@ -71,3 +72,23 @@ def save_to_obsidian(content: str, title: str = None) -> str:
 
     except Exception as e:
         return f"❌ Error saving to Obsidian: {str(e)}"
+
+
+@tool
+def email_weekly_review(review_content: str, week_label: str) -> str:
+    """
+    Email the weekly review to yourself.
+
+    Args:
+        review_content: The weekly review content to email
+        week_label: Label for the week (e.g., "Week 3, 2026")
+
+    Returns:
+        Success message with email ID or error message
+    """
+    try:
+        to_email = os.getenv("EMAIL_TO", "gilbertjyoungjr@gmail.com")
+        result = send_weekly_email(to=to_email, review_content=review_content, week_label=week_label)
+        return f"✅ Email sent! ID: {result['id']}"
+    except Exception as e:
+        return f"❌ Error sending email: {str(e)}"
