@@ -84,3 +84,43 @@ Your daily thoughts here...
 ## Output
 
 Reviews are saved to `Weekly Reviews/` folder in your vault with filenames like `2026-W01.md`, containing stats, wins, blockers, patterns, and actionable next steps.
+
+## Automated Scheduling (Cron Job)
+
+Want the agent to run automatically every week? Set up a cron job:
+
+### 1. Make the runner script executable
+
+```bash
+chmod +x run_agent.sh
+```
+
+### 2. Open your crontab
+
+```bash
+crontab -e
+```
+
+### 3. Add a schedule
+
+Pick one of these (or customize):
+
+| Schedule | Cron Entry |
+|----------|------------|
+| Every Sunday at 9 AM | `0 9 * * 0 /path/to/obsidian_agent/run_agent.sh` |
+| Every Monday at 7 AM | `0 7 * * 1 /path/to/obsidian_agent/run_agent.sh` |
+| Every day at 8 PM | `0 20 * * * /path/to/obsidian_agent/run_agent.sh` |
+
+Replace `/path/to/obsidian_agent/` with your actual path.
+
+### 4. Verify it's set
+
+```bash
+crontab -l
+```
+
+### Optional: Enable logging
+
+Edit `run_agent.sh` and uncomment the logging line to save output to `/tmp/obsidian_agent.log`.
+
+> **Note (macOS):** You may need to grant "Full Disk Access" to `/usr/sbin/cron` in **System Settings → Privacy & Security → Full Disk Access** if accessing files outside your home directory.
