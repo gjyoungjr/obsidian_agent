@@ -5,21 +5,16 @@ from parser.weekly_parser import (format_weekly_daily_with_reflections,
 from pathlib import Path
 
 from langchain_core.tools import tool
+
 from mailer import send_weekly_email
 
-VAULT_PATH = os.getenv("OBSIDIAN_VAULT_PATH",
-                       "/Users/gilbertyoung/documents/notes/Daily Actions")
+VAULT_PATH = Path(os.getenv("OBSIDIAN_VAULT_PATH", ""))
 REVIEW_FOLDER = "Weekly Reviews"
 
 
 def get_raw_weekly_data(days_back: int = 7) -> tuple:
-    """
-    Get raw weekly data for stats preview (not an agent tool).
-
-    Returns:
-        Tuple of (weekly_stats, daily_data)
-    """
-    return parse_weekly_notes_combined(VAULT_PATH, days_back)
+    """Get raw weekly data for stats preview (not an agent tool)."""
+    return parse_weekly_notes_combined(str(VAULT_PATH), days_back)
 
 
 @tool
@@ -33,13 +28,15 @@ def get_weekly_review(days_back: int = 7) -> str:
     Returns:
         Formatted weekly summary with habits, priorities, energy, mood, and reflections.
     """
-    weekly_stats, daily_data = parse_weekly_notes_combined(
-        VAULT_PATH, days_back)
-    return format_weekly_daily_with_reflections(daily_data=daily_data, include_weekly_reflections=False)
+    _, daily_data = parse_weekly_notes_combined(str(VAULT_PATH), days_back)
+    return format_weekly_daily_with_reflections(
+        daily_data=daily_data,
+        include_weekly_reflections=False
+    )
 
 
 @tool
-def save_to_obsidian(content: str, title: str = None) -> str:
+def save_to_obsidian(content: str, title: str | None = None) -> str:
     """
     Save the weekly review to Obsidian vault.
 
@@ -51,22 +48,15 @@ def save_to_obsidian(content: str, title: str = None) -> str:
         Success message with file path
     """
     try:
-        review_path = Path(VAULT_PATH).parent / REVIEW_FOLDER
+        review_path = VAULT_PATH.parent / REVIEW_FOLDER
         review_path.mkdir(exist_ok=True)
 
-        now = datetime.now()
-        iso_cal = now.isocalendar()
-        year = iso_cal[0]      # ISO year (handles year boundary correctly)
-        week_num = iso_cal[1]  # ISO week number
-
         if title is None:
+            year, week_num, _ = datetime.now().isocalendar()
             title = f"{year}-W{week_num:02d}"
 
-        filename = f"{title}.md"
-        filepath = review_path / filename
-
-        with open(filepath, 'w', encoding='utf-8') as f:
-            f.write(content)
+        filepath = review_path / f"{title}.md"
+        filepath.write_text(content, encoding="utf-8")
 
         return f"✅ Review saved to: {filepath}"
 
@@ -88,7 +78,8 @@ def email_weekly_review(review_content: str, week_label: str) -> str:
     """
     try:
         to_email = os.getenv("EMAIL_TO", "gilbertjyoungjr@gmail.com")
-        result = send_weekly_email(to=to_email, review_content=review_content, week_label=week_label)
+        result = send_weekly_email(
+            to=to_email, review_content=review_content, week_label=week_label)
         return f"✅ Email sent! ID: {result['id']}"
     except Exception as e:
         return f"❌ Error sending email: {str(e)}"
