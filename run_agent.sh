@@ -7,8 +7,8 @@ cd /Users/gilbertyoung/Documents/Code/obsidian_agent
 # Activate virtual environment
 source venv/bin/activate
 
-# Run the agent (non-interactive mode)
-python agent.py --days 7
+# Create logs directory if it doesn't exist
+mkdir -p logs
 
-# Optional: Log output with timestamp
-# python agent.py --days 7 >> /tmp/obsidian_agent.log 2>&1
+# Run the agent with logging
+python agent.py --days 7 >> logs/agent.log 2>&1
