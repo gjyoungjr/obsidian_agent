@@ -7,6 +7,7 @@ An AI-powered productivity agent that analyzes your Obsidian daily notes and gen
 - Parses daily notes for habits, priorities (P1/P2/P3), admin tasks, energy, mood, and reflections
 - Generates insightful weekly reviews with pattern recognition and actionable advice
 - Saves reviews directly to your Obsidian vault
+- Emails formatted weekly reviews to your inbox
 - Interactive chat mode for follow-up questions
 
 ## Installation
@@ -24,6 +25,11 @@ Create a `.env` file:
 ```env
 OPENAI_API_KEY=your-api-key
 OBSIDIAN_VAULT_PATH=/path/to/your/vault/Daily Actions
+
+# Email (optional - for weekly review emails via Resend)
+RESEND_API_KEY=your-resend-api-key
+RESEND_SOURCE_EMAIL=reviews@yourdomain.com
+EMAIL_TO=your-email@example.com
 ```
 
 ## Usage
@@ -81,6 +87,17 @@ Your Obsidian daily notes should follow this structure:
 Your daily thoughts here...
 ```
 
+## Email Reviews
+
+To email your weekly review, use chat mode and ask the agent:
+
+```bash
+python agent.py --chat
+# Then: "Email me this review"
+```
+
+Requires [Resend](https://resend.com) API key configured in `.env`.
+
 ## Output
 
 Reviews are saved to `Weekly Reviews/` folder in your vault with filenames like `2026-W01.md`, containing stats, wins, blockers, patterns, and actionable next steps.
@@ -105,11 +122,11 @@ crontab -e
 
 Pick one of these (or customize):
 
-| Schedule | Cron Entry |
-|----------|------------|
-| Every Sunday at 9 AM | `0 9 * * 0 /path/to/obsidian_agent/run_agent.sh` |
-| Every Monday at 7 AM | `0 7 * * 1 /path/to/obsidian_agent/run_agent.sh` |
-| Every day at 8 PM | `0 20 * * * /path/to/obsidian_agent/run_agent.sh` |
+| Schedule             | Cron Entry                                        |
+| -------------------- | ------------------------------------------------- |
+| Every Sunday at 9 AM | `0 9 * * 0 /path/to/obsidian_agent/run_agent.sh`  |
+| Every Monday at 7 AM | `0 7 * * 1 /path/to/obsidian_agent/run_agent.sh`  |
+| Every day at 8 PM    | `0 20 * * * /path/to/obsidian_agent/run_agent.sh` |
 
 Replace `/path/to/obsidian_agent/` with your actual path.
 
@@ -119,8 +136,8 @@ Replace `/path/to/obsidian_agent/` with your actual path.
 crontab -l
 ```
 
-### Optional: Enable logging
+### Logs
 
-Edit `run_agent.sh` and uncomment the logging line to save output to `/tmp/obsidian_agent.log`.
+Cron job output is saved to `logs/agent.log` in the project directory.
 
 > **Note (macOS):** You may need to grant "Full Disk Access" to `/usr/sbin/cron` in **System Settings → Privacy & Security → Full Disk Access** if accessing files outside your home directory.
