@@ -5,3 +5,4 @@ langchain-groq
 langchain-openai
 rich>=13.0.0
 resend
+markdown>=3.5
