@@ -38,7 +38,7 @@ def get_weekly_review(days_back: int = 7) -> str:
 @tool
 def save_to_obsidian(content: str, title: str | None = None) -> str:
     """
-    Save the weekly review to Obsidian vault.
+    Save the weekly review analysis to Obsidian vault.
 
     Args:
         content: The complete markdown content including frontmatter from agent
