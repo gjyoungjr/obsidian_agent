@@ -1,14 +1,29 @@
 # Python virtual environment
 venv/
+.venv/
+
+# Environment variables / secrets
 .env
+.env.*
+*.key
 
 # Python cache / compiled files
 __pycache__/
 *.py[cod]
-*.pyo
 *.pyd
+*.egg-info/
+*.egg
+
+# Python build artifacts
+build/
+dist/
+
+# Type checker / testing caches
+.mypy_cache/
+.pytest_cache/
 
 # Logs and output
+logs/
 *.log
 output/
 
@@ -21,8 +36,6 @@ output/
 # MacOS system files
 .DS_Store
 
-# Jupyter notebooks checkpoints (if any)
+# Jupyter notebook checkpoints
 .ipynb_checkpoints/
 
-# Optional: AI API key or secrets
-*.key
