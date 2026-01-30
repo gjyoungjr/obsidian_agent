@@ -63,8 +63,8 @@ avg_mood: 4/5
 > - **P2 Tasks:** 80%
 > - **P3 Tasks:** 60%
 > - **Admin Tasks:** 50%
-> - **Avg Energy:** 6.5/10
-> - **Avg Mood:** 7.2/10
+> - **Avg Energy:** 3.5/5
+> - **Avg Mood:** 4.2/5
 
 ---
 
@@ -90,12 +90,28 @@ avg_mood: 4/5
 
 [Your recommendations]
 
-## Pattern Recognition 
+## Pattern Recognition 📊
 
-[Your analysis here...]
+### Habit-Outcome Correlations
+| Habit | Days Done | Avg Mood | Avg Energy | Impact |
+|-------|-----------|----------|------------|--------|
+| [Habit] | X/7 | X.X | X.X | +/- X.X vs off days |
 
-> [!info] 💡 Pattern Spotted
-> [Callout for interesting correlations]
+### Day-of-Week Analysis
+- **Peak Day:** [Day] - [why]
+- **Low Day:** [Day] - [why]
+
+### Key Patterns Found
+
+> [!info] 💡 Pattern: [Name]
+> **Finding:** [What you found]
+> **The numbers:** [Specific data]  
+> **What this means:** [Actionable insight]
+
+> [!info] 💡 Pattern: [Name]
+> **Finding:** [What you found]
+> **The numbers:** [Specific data]
+> **What this means:** [Actionable insight]
 
 ## Experiments to Try  
 
@@ -159,10 +175,22 @@ Main obstacles that prevented progress. Be real but not harsh.
 1-2 focus suggestions that would actually move the needle. Make them feel achievable, not overwhelming.
 
 ### 5. Pattern Recognition (The Receipts 📊)
-Detect correlations between habits, tasks, energy, and mood:
-- "Skipped gym on low-energy days—makes sense tbh"
-- "Higher mood on days P1 tasks were completed—we see the correlation"
-- Use `> [!info]` callouts for interesting patterns
+Find correlations and patterns in the data. **Pick the 2-3 most interesting patterns** from these options:
+
+**ANALYSIS OPTIONS (pick 2-3 most relevant):**
+- **Habit-Outcome Correlations**: "Gym days: 4.2 avg mood vs 2.8 on rest days (+1.4)"
+- **Day-of-Week Breakdown**: "Peak: Tuesday (3 P1s, 4.5/5 energy) | Low: Thursday"
+- **Task Completion Patterns**: "70% of P1s done Mon-Wed, only 30% Thu-Sun"
+- **Energy-Productivity Link**: "High energy (4+) → 2.5 tasks | Low (<3) → 0.8 tasks"
+- **Reflection Keyword Scan**: "Mentioned 'tired' 3x this week (Tue, Wed, Thu)"
+
+**FORMAT (keep each pattern brief):**
+```
+> [!info] 💡 Pattern: [Name]
+> [One sentence finding with specific numbers]
+```
+
+**Be specific with numbers but concise.** Example: "Gym days = +1.4 mood (4.2 vs 2.8)"
 
 ### 6. Experiments to Try (Small Tweaks, Big Vibes) 🧪
 Suggest 1-2 small, practical experiments:
@@ -185,6 +213,7 @@ Include percentages and quantitative trends:
 For each day, 1 short actionable insight based on that day's data.
 
 ## Constraints:
+- **CRITICAL: You MUST complete ALL sections of the template. Do not stop after Pattern Recognition.**
 - Only use data provided—no hallucinations
 - Be honest but not brutal
 - Keep it conversational but still useful
@@ -193,4 +222,5 @@ For each day, 1 short actionable insight based on that day's data.
 - Calculate all percentages and stats accurately from the data
 - Use proper ISO format for timestamps: YYYY-MM-DDTHH:MM:SS
 - Make sure all markdown syntax is correct (proper callout format, checkboxes, etc.)
+- Keep Pattern Recognition focused: 2-3 key patterns max, don't over-elaborate
 """
