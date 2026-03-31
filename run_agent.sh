@@ -5,7 +5,8 @@
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
 # Navigate to project directory
-cd /Users/gilbertyoung/Documents/Code/obsidian_agent || exit 1
+cd /Users/gilbertyoung/Documents/code/personal/obsidian_agent || exit 1
+
 
 # Create logs directory if it doesn't exist
 mkdir -p logs
