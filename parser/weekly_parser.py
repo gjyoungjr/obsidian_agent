@@ -2,6 +2,32 @@ import datetime
 import os
 from collections import defaultdict
 
+REFLECTION_SECTION_MAP = {
+    "what did i do today?": "did_today",
+    "what did i learn today?": "learned_today",
+    "what stressed me today?": "stressed_today",
+    "what am i excited about?": "excited_about",
+    "what am i worried about?": "worried_about",
+    "what would make tomorrow good?": "tomorrow_good",
+    "am i moving forward or just busy?": "forward_or_busy",
+    "busy with:": "busy_with",
+    "moving forward because:": "moving_forward_because",
+    "conclusion:": "forward_busy_conclusion",
+}
+
+REFLECTION_OUTPUT_LABELS = {
+    "did_today": "What did I do today?",
+    "learned_today": "What did I learn today?",
+    "stressed_today": "What stressed me today?",
+    "excited_about": "What am I excited about?",
+    "worried_about": "What am I worried about?",
+    "tomorrow_good": "What would make tomorrow good?",
+    "forward_or_busy": "Am I moving forward or just busy?",
+    "busy_with": "Busy with:",
+    "moving_forward_because": "Moving forward because:",
+    "forward_busy_conclusion": "Conclusion:",
+}
+
 
 def parse_weekly_notes_combined(vault_path, days_back=7):
     """
@@ -26,6 +52,13 @@ def parse_weekly_notes_combined(vault_path, days_back=7):
         "admin": {"done": 0, "total": 0},
         "energy": [],
         "mood": [],
+        "daily_score": {
+            "productivity": [],
+            "focus": [],
+            "energy": [],
+            "mood": [],
+            "progress": [],
+        },
     }
 
     daily_data = []
@@ -46,11 +79,20 @@ def parse_weekly_notes_combined(vault_path, days_back=7):
             "admin": {"done": 0, "total": 0},
             "energy": None,
             "mood": None,
+            "daily_score": {
+                "productivity": None,
+                "focus": None,
+                "energy": None,
+                "mood": None,
+                "progress": None,
+            },
         }
         reflections = []
+        reflection_sections = defaultdict(list)
 
         section = None
         priority = None
+        current_reflection_key = None
 
         with open(path, encoding="utf-8") as f:
             for line in f:
@@ -77,12 +119,27 @@ def parse_weekly_notes_combined(vault_path, days_back=7):
                     continue
                 if line.startswith("## 📝 Reflection"):
                     section = "reflection"
+                    current_reflection_key = None
+                    continue
+                if line.startswith("## 📊 Daily Score"):
+                    section = "daily_score"
+                    current_reflection_key = None
+                    continue
+                if section == "reflection" and line.startswith("###"):
+                    heading = line.replace("###", "", 1).strip().lower()
+                    current_reflection_key = REFLECTION_SECTION_MAP.get(heading)
+                    continue
+                if section == "reflection" and line.startswith("**") and line.endswith("**"):
+                    heading = line.strip("*").strip().lower()
+                    current_reflection_key = REFLECTION_SECTION_MAP.get(heading)
                     continue
 
                 # Habit / Task / Admin
                 if line.startswith("- ["):
-                    done = line.startswith("- [x]")
+                    done = line.lower().startswith("- [x]")
                     content = line[6:].strip()
+                    if not content:
+                        continue
                     if section == "habits":
                         stats["habits"][content]["total"] += 1
                         if done:
@@ -133,9 +190,40 @@ def parse_weekly_notes_combined(vault_path, days_back=7):
                     except:
                         pass
 
+                # Daily Score block
+                if section == "daily_score":
+                    if ":" in line:
+                        label, raw_value = line.split(":", 1)
+                        label = label.strip().lower()
+                        raw_value = raw_value.strip()
+                        if raw_value:
+                            try:
+                                value = int(raw_value)
+                                if label in stats["daily_score"]:
+                                    stats["daily_score"][label] = value
+                                    weekly_stats["daily_score"][label].append(value)
+
+                                    # Backfill energy/mood if missing in energy section
+                                    if label == "energy" and stats["energy"] is None:
+                                        stats["energy"] = value
+                                        weekly_stats["energy"].append(value)
+                                    if label == "mood" and stats["mood"] is None:
+                                        stats["mood"] = value
+                                        weekly_stats["mood"].append(value)
+                            except ValueError:
+                                pass
+
                 # Reflection
                 if section == "reflection" and line:
-                    reflections.append(line)
+                    clean_line = line.lstrip("- ").strip()
+                    if not clean_line:
+                        continue
+                    if clean_line == "-":
+                        continue
+
+                    reflections.append(clean_line)
+                    if current_reflection_key:
+                        reflection_sections[current_reflection_key].append(clean_line)
 
         daily_data.append({
             "date": day,
@@ -144,7 +232,9 @@ def parse_weekly_notes_combined(vault_path, days_back=7):
             "admin": stats["admin"],
             "energy": stats["energy"],
             "mood": stats["mood"],
-            "reflections": reflections
+            "daily_score": stats["daily_score"],
+            "reflections": reflections,
+            "reflection_sections": dict(reflection_sections),
         })
 
     return weekly_stats, daily_data
@@ -195,6 +285,14 @@ def format_weekly_daily_with_reflections(daily_data=None, weekly_stats=None,
         if weekly_stats["mood"]:
             avg_mood = sum(weekly_stats["mood"]) / len(weekly_stats["mood"])
             lines.append(f"AVERAGE MOOD: {avg_mood:.1f}")
+        ds = weekly_stats.get("daily_score", {})
+        if ds:
+            lines.append("\nDAILY SCORE AVERAGES:")
+            for metric in ["productivity", "focus", "progress"]:
+                values = ds.get(metric, [])
+                if values:
+                    avg = sum(values) / len(values)
+                    lines.append(f"- {metric.title()}: {avg:.1f}")
 
     # Weekly Reflections (grouped by day)
     if daily_data and include_weekly_reflections:
@@ -203,9 +301,18 @@ def format_weekly_daily_with_reflections(daily_data=None, weekly_stats=None,
             if not day_data["reflections"]:
                 continue
             lines.append(f"{day_data['date']}:")
-            for r in day_data["reflections"]:
-                clean_r = r.replace("###", "").strip()
-                lines.append(f"- {clean_r}")
+            section_data = day_data.get("reflection_sections", {})
+            if section_data:
+                for key, label in REFLECTION_OUTPUT_LABELS.items():
+                    entries = section_data.get(key, [])
+                    if not entries:
+                        continue
+                    lines.append(f"- {label}")
+                    for entry in entries:
+                        lines.append(f"  - {entry}")
+            else:
+                for r in day_data["reflections"]:
+                    lines.append(f"- {r}")
             lines.append("")  # blank line between days
 
     if daily_data:
@@ -230,10 +337,26 @@ def format_weekly_daily_with_reflections(daily_data=None, weekly_stats=None,
                 lines.append(f"ENERGY: {day_data['energy']}")
             if day_data["mood"] is not None:
                 lines.append(f"MOOD: {day_data['mood']}")
+            day_score = day_data.get("daily_score", {})
+            if any(v is not None for v in day_score.values()):
+                lines.append("DAILY SCORE:")
+                for metric in ["productivity", "focus", "energy", "mood", "progress"]:
+                    value = day_score.get(metric)
+                    if value is not None:
+                        lines.append(f"- {metric.title()}: {value}")
             lines.append("REFLECTIONS:")
-            for r in day_data["reflections"]:
-                clean_r = r.replace("###", "").strip()
-                lines.append(f"- {clean_r}")
+            section_data = day_data.get("reflection_sections", {})
+            if section_data:
+                for key, label in REFLECTION_OUTPUT_LABELS.items():
+                    entries = section_data.get(key, [])
+                    if not entries:
+                        continue
+                    lines.append(f"- {label}")
+                    for entry in entries:
+                        lines.append(f"  - {entry}")
+            else:
+                for r in day_data["reflections"]:
+                    lines.append(f"- {r}")
             lines.append("\n")  # newline between days
 
     return "\n".join(lines)
