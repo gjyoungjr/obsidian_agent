@@ -58,33 +58,65 @@ Your Obsidian daily notes should follow this structure:
 ```markdown
 ## 🔁 Habits
 
-- [x] Exercise
-- [ ] Read
+- [ ] Gym
+- [ ] Read & Research
 
-### P1
+## 🎯 Priority Tasks
+### P1 — Must Do
 
-- [x] Important task
+- [ ] 
 
-### P2
+### P2 — Should Do
 
-- [ ] Medium priority
+- [ ] 
 
-### P3
+### P3 — Nice to Have
 
-- [ ] Low priority
+- [ ] 
 
-## 🧹 Life Admin
+## 🧹 Life & Admin
 
-- [x] Pay bills
+- [ ] 
 
-## ⚡ Energy & Mood
+## ⚡ Energy / Mood
 
-- Energy: 7
-- Mood: 8
+- Energy (1–5): 
+- Mood (1–5): 
 
-## 📝 Reflection
+## 📝 Reflection / Journal
 
-Your daily thoughts here...
+### What did I do today?
+-
+
+### What did I learn today?
+-
+
+### What stressed me today?
+-
+
+### What am I excited about?
+-
+
+### What am I worried about?
+-
+
+### What would make tomorrow good?
+-
+
+### Am I moving forward or just busy?
+**Busy with:**
+- 
+
+**Moving forward because:**
+- 
+**Conclusion:** 
+
+## 📊 Daily Score  
+Productivity:  4
+Focus:  4
+Energy:  5
+Mood:  3
+Progress:4
 ```
 
 ## Email Reviews
